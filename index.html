@@ -1,0 +1,73 @@
+<html>
+
+<head>
+    <title>Web Test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+</head>
+
+<body>
+    <div ng-app="web3test" ng-controller="testcontroller">
+        <input type="button" ng-click="initWeb3()" value="{{Connected}}"></input>
+        <input type="button" ng-click="getBalance()" value="Balance"></input>
+        <input type="button" ng-click="getBlock(52)" value="GetBlock(52)"></input>
+
+        <textarea name="" id="" cols="30" rows="10">
+            {{result}}
+        </textarea>
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {   
+            // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+            if (typeof web3 !== 'undefined') {
+                // Use Mist/MetaMask's provider
+                window.web3 = new Web3(web3.currentProvider);
+            } else {
+                console.log('No web3? You should consider trying MetaMask!')
+                // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+                window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+            }
+        });
+        
+    </script>
+    <script>
+        var app = angular.module("web3test", []);
+
+        app.controller("testcontroller", ["$scope", "$window", "$rootScope", testcontroller]);
+
+        function testcontroller($scope, $window, $rootScope) {
+
+            $scope.ContractAbi = [{ "constant": false, "inputs": [{ "name": "amt", "type": "uint256" }], "name": "withdraw", "outputs": [], "payable": false, "type": "function" }, { "constant": false, "inputs": [{ "name": "amt", "type": "uint256" }], "name": "deposit", "outputs": [], "payable": false, "type": "function" }, { "constant": true, "inputs": [], "name": "GetBal", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "type": "function" }];
+            $scope.ContractOwnerAddress = "0x39BbD40F238C81e07787900928B7649A7bE900A9";
+            $scope.ContractByteCode = "60606040526000600055341561001157fe5b5b61010a806100216000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680632e1a7d4d14604e578063b6b55f2514606b578063bf8869b5146088575bfe5b3415605557fe5b6069600480803590602001909190505060ab565b005b3415607257fe5b6086600480803590602001909190505060bf565b005b3415608f57fe5b609560d3565b6040518082815260200191505060405180910390f35b806000600082825403925050819055505b50565b806000600082825401925050819055505b50565b600060005490505b905600a165627a7a7230582035de5f4c5797440a18bf775d2dc3df8b6e14e81e38ec76929cdc18f796a663510029"
+
+            $scope.web3 = null;
+            $scope.Connected = "Connect";
+            $scope.result = null;
+            
+            $scope.getBalance = function () {
+                $window.web3.eth.getBalance($scope.ContractOwnerAddress, 'latest', function (err, res) {
+                    alert(res)
+                });
+            }
+            $scope.getBlock = function (BlockNo) {
+                $window.web3.eth.getBlock(BlockNo, function (error, result) {
+                    if (!error)
+                         $scope.result=JSON.stringify(result);
+                    else
+                       $scope.result=JSON.stringify(error);
+                })
+            }
+            /*var batch = web3.createBatch();
+                         batch.add(web3.eth.getBalance.request(address, 'latest', function(err,res){
+                                 console.log(res)
+                         }));*/
+
+            $scope.initWeb3 = function () {
+                $scope.Connected = $window.web3.isConnected() ? "connected" : "Connect";
+            }
+        }
+    </script>
+</body>
+
+</html>
