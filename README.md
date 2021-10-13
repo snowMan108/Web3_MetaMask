@@ -10,7 +10,4 @@ Steps to use
 6  Browse in localhost/virtualdirectoryname/index.html
 
 Thank you
-I will update more clearly on next commits
-
-skype: cnu.online
-phone: +919908118079
+ 
